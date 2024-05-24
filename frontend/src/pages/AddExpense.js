@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Form, Button, Alert } from "react-bootstrap";
+import { Card, Form, Button } from "react-bootstrap";
+import CustomAlert from "../components/CustomAlert";
 
 function AddExpense() {
     const [expenseData, setExpenseData] = useState({
@@ -27,7 +28,8 @@ function AddExpense() {
         e.preventDefault();
 
         try {
-            const response = await fetch("/api/expenses/add/", { // Ensure your endpoint is correct
+            const response = await fetch("/api/expenses/add/", {
+                // Ensure your endpoint is correct
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -60,23 +62,47 @@ function AddExpense() {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <Card style={{ width: '24rem', height: '30rem' }}>
+            <Card style={{ width: "24rem", height: "30rem" }}>
                 <Card.Header className="text-center">
                     <h3>Add Expense</h3>
                 </Card.Header>
                 <Card.Body>
-                    {error && <Alert variant="danger">{error}</Alert>}
+                    <CustomAlert
+                        show={error}
+                        setShow={setError}
+                        variant="danger"
+                    />
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mt-3" controlId="formBasicTitle">
-                            <Form.Control type="text" placeholder="Expense Title" name="expense_title" value={expenseData.expense_title} onChange={handleChange} />
+                            <Form.Control
+                                type="text"
+                                placeholder="Expense Title"
+                                name="expense_title"
+                                value={expenseData.expense_title}
+                                onChange={handleChange}
+                            />
                         </Form.Group>
 
-                        <Form.Group className="mt-3" controlId="formBasicDescription">
-                            <Form.Control type="text" placeholder="Description" name="expense_description" value={expenseData.expense_description} onChange={handleChange} />
+                        <Form.Group
+                            className="mt-3"
+                            controlId="formBasicDescription"
+                        >
+                            <Form.Control
+                                type="text"
+                                placeholder="Description"
+                                name="expense_description"
+                                value={expenseData.expense_description}
+                                onChange={handleChange}
+                            />
                         </Form.Group>
 
                         <Form.Group className="mt-3" controlId="formBasicODate">
-                            <Form.Control type="date" name="date_occured" value={expenseData.date_occured} onChange={handleChange} />
+                            <Form.Control
+                                type="date"
+                                name="date_occured"
+                                value={expenseData.date_occured}
+                                onChange={handleChange}
+                            />
                         </Form.Group>
                         <Form.Group className="mt-3" controlId="isPaidCheckbox">
                             <Form.Check
@@ -88,7 +114,12 @@ function AddExpense() {
                             />
                         </Form.Group>
                         <Form.Group className="mt-3" controlId="formBasicDDate">
-                            <Form.Control type="date" name="due_date" value={expenseData.due_date} onChange={handleChange} />
+                            <Form.Control
+                                type="date"
+                                name="due_date"
+                                value={expenseData.due_date}
+                                onChange={handleChange}
+                            />
                         </Form.Group>
                         <div className="d-flex justify-content-between mt-3">
                             <Button variant="secondary" onClick={handleClear}>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Expense from "../components/Expense";
+import CustomAlert from "../components/CustomAlert";
 
 function Dashboard() {
     const [expenses, setExpenses] = useState([]);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchExpenses = async () => {
@@ -51,16 +53,25 @@ function Dashboard() {
         }
     };
 
+    const handleLearnMoreClick = (expenseId) => {
+        navigate(`/expense/${expenseId}`);
+    };
+
     return (
         <div className="container mt-4">
-            {success && <Alert variant="success">{success}</Alert>}
-            {error && <Alert variant="danger">{error}</Alert>}
+            <CustomAlert
+                show={success}
+                setShow={setSuccess}
+                variant="success"
+            />
+            <CustomAlert show={error} setShow={setError} variant="danger" />
             <div className="row">
                 {expenses.map((expense) => (
                     <Expense
                         key={expense.expense_id}
                         expense={expense}
                         handleDelete={handleDelete}
+                        handleLearnMoreClick={handleLearnMoreClick}
                     />
                 ))}
             </div>

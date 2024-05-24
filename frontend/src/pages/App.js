@@ -10,6 +10,7 @@ import AddExpense from "./AddExpense";
 import Login from "./Login";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
+import SingleExpense from "./SingleExpense";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -54,6 +55,16 @@ function App() {
                     element={
                         isAuthenticated ? (
                             <Dashboard />
+                        ) : (
+                            <Navigate to="/login" />
+                        )
+                    }
+                />
+                <Route
+                    path="/expense/:id"
+                    element={
+                        isAuthenticated ? (
+                            <SingleExpense />
                         ) : (
                             <Navigate to="/login" />
                         )

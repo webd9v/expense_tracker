@@ -67,6 +67,7 @@ def register(request):
 
 
 # Expense Endpoints
+@api_view(['GET', 'PUT'])
 @login_required
 def get_expense(request, expense_id):
     try:

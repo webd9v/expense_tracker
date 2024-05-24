@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
 
-const Expense = ({ expense, handleDelete }) => {
+const Expense = ({ expense, handleDelete, handleLearnMoreClick }) => {
     return (
         <div className="col-md-4 mb-3">
             <Card>
@@ -10,7 +10,11 @@ const Expense = ({ expense, handleDelete }) => {
                     <Card.Text>
                         Is Paid: {expense.is_paid ? "Yes" : "No"}
                     </Card.Text>
-                    <Button variant="primary" className="me-2">
+                    <Button
+                        variant="primary"
+                        className="me-2"
+                        onClick={() => handleLearnMoreClick(expense.expense_id)}
+                    >
                         Learn More
                     </Button>
                     <Button

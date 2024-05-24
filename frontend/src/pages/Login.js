@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Card, Form, Button, Alert } from "react-bootstrap";
-
+import { Card, Form, Button } from "react-bootstrap";
+import CustomAlert from "../components/CustomAlert";
 
 function Login({ onLogin }) {
     const [email, setEmail] = useState("");
@@ -67,21 +67,43 @@ function Login({ onLogin }) {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <Card style={{ width: '20rem', height: '18rem'}}>
+            <Card style={{ width: "20rem", height: "18rem" }}>
                 <Card.Header className="text-center">
                     <h3>Login</h3>
                 </Card.Header>
                 <Card.Body>
-                    {error && <Alert variant="danger">{error}</Alert>} {/* Display error alert */}
+                    <CustomAlert
+                        show={error}
+                        setShow={setError}
+                        variant="danger"
+                    />
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mt-2" controlId="formBasicEmail">
-                            <Form.Control type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <Form.Control
+                                type="email"
+                                placeholder="Email Address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </Form.Group>
 
-                        <Form.Group className="mt-2" controlId="formBasicPassword">
-                            <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <Form.Group
+                            className="mt-2"
+                            controlId="formBasicPassword"
+                        >
+                            <Form.Control
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                         </Form.Group>
-                        <Button variant="success" type="submit" className="w-100 mt-3" block>
+                        <Button
+                            variant="success"
+                            type="submit"
+                            className="w-100 mt-3"
+                            block
+                        >
                             Login
                         </Button>
                     </Form>
