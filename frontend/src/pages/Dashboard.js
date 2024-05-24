@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
+import Expense from "../components/Expense";
 
 function Dashboard() {
     const [expenses, setExpenses] = useState([]);
@@ -11,7 +12,9 @@ function Dashboard() {
             try {
                 const response = await fetch("api/expenses/", {
                     headers: {
-                        "Authorization": `Token ${localStorage.getItem("authToken")}`, 
+                        Authorization: `Token ${localStorage.getItem(
+                            "authToken"
+                        )}`,
                     },
                 });
                 if (response.ok) {
@@ -25,14 +28,14 @@ function Dashboard() {
             }
         };
         fetchExpenses();
-    }, [success]); 
+    }, [success]);
 
     const handleDelete = async (expenseId) => {
         try {
             const response = await fetch(`api/delete_expense/${expenseId}/`, {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Token ${localStorage.getItem("authToken")}`, 
+                    Authorization: `Token ${localStorage.getItem("authToken")}`,
                 },
             });
 
@@ -54,25 +57,11 @@ function Dashboard() {
             {error && <Alert variant="danger">{error}</Alert>}
             <div className="row">
                 {expenses.map((expense) => (
-                    <div key={expense.expense_id} className="col-md-4 mb-3">
-                        <Card>
-                            <Card.Body>
-                                <Card.Title>{expense.expense_title}</Card.Title>
-                                <Card.Text>
-                                    Is Paid: {expense.is_paid ? "Yes" : "No"}
-                                </Card.Text>
-                                <Button variant="primary" className="me-2">
-                                    Learn More
-                                </Button>
-                                <Button
-                                    variant="danger"
-                                    onClick={() => handleDelete(expense.expense_id)}
-                                >
-                                    Delete Expense
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </div>
+                    <Expense
+                        key={expense.expense_id}
+                        expense={expense}
+                        handleDelete={handleDelete}
+                    />
                 ))}
             </div>
         </div>
