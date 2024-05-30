@@ -7,12 +7,13 @@ from django.shortcuts import HttpResponseRedirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
-from .models import Expense, User
-from .serializers import ExpenseSerializer
+from .models import Expense, User, Category
+from .serializers import ExpenseSerializer, CategorySerializer
 
 @api_view(['GET'])
 def get_csrf_token(request):
@@ -108,6 +109,11 @@ def add_expense(request):
             date_occured = data.get('date_occured')
             is_paid = data.get('is_paid', False)
             due_date = data.get('due_date')
+            category = data.get('category')
+            try:
+                category = Category.objects.get(category_name=category)
+            except:
+                return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
 
             if not expense_title or not date_occured:
                 return JsonResponse({'error': 'Expense title and date occurred are required.'}, status=400)
@@ -118,7 +124,8 @@ def add_expense(request):
                 date_occured=date_occured,
                 is_paid=is_paid,
                 due_date=due_date,
-                user=request.user
+                user=request.user,
+                category=category
             )
             expense.save()
 
@@ -129,7 +136,8 @@ def add_expense(request):
                 'date_occured': expense.date_occured,
                 'is_paid': expense.is_paid,
                 'due_date': expense.due_date,
-                'user': expense.user.username
+                'user': expense.user.username,
+                'category': expense.category.category_name
             }, status=201)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)
@@ -147,3 +155,44 @@ def delete_expense(request, expense_id):
         return JsonResponse({"message": "Expense Deleted Successfully!"}, status=status.HTTP_204_NO_CONTENT)
     except Expense.DoesNotExist:
         return JsonResponse({"message": "Expense not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@login_required
+@api_view(['GET'])
+def search_expenses(request):
+    searchTerm = request.GET.get("search", "")
+    month = request.GET.get("month")
+    day = request.GET.get("day")
+    year = request.GET.get("year")
+    is_paid = request.GET.get("is_paid")
+    category = request.GET.get("category")
+
+    expenses = Expense.objects.filter(user=request.user)
+
+    if searchTerm:
+        expenses = expenses.filter(Q(expense_title__icontains=searchTerm) | Q(expense_description__icontains=searchTerm))
+    if month:
+        expenses = expenses.filter(date_occured__month=month)
+    if day:
+        expenses = expenses.filter(date_occured__day=day)
+    if year:
+        expenses = expenses.filter(date_occured__year=year)
+    if is_paid and is_paid.lower() != "null":
+        is_paid_bool = is_paid.lower() == "true"
+        expenses = expenses.filter(is_paid=is_paid_bool)
+    if category:
+        try:
+            category = Category.objects.get(category_name=category)
+        except:
+            return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
+        expenses = expenses.filter(category=category)
+
+    serializer = ExpenseSerializer(expenses, many=True)
+    return Response(serializer.data)
+
+
+@login_required
+@api_view(['GET'])
+def get_all_categories(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)

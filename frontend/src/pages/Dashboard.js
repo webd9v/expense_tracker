@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Expense from "../components/Expense";
 import CustomAlert from "../components/CustomAlert";
+import SearchBar from "../components/SearchBar";
 
 function Dashboard() {
     const [expenses, setExpenses] = useState([]);
@@ -57,15 +58,47 @@ function Dashboard() {
         navigate(`/expense/${expenseId}`);
     };
 
+    const handleSearch = async (searchTerm, filters) => {
+        try {
+            const params = new URLSearchParams({
+                search: searchTerm,
+                month: filters.month,
+                day: filters.day,
+                year: filters.year,
+                is_paid: filters.isPaid,
+                category: filters.category,
+            });
+
+            const response = await fetch(`/api/expenses/search/?${params}`, {
+                headers: {
+                    Authorization: `Token ${localStorage.getItem("authToken")}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setExpenses(data);
+            } else {
+                setError("Error searching for expenses.");
+                setTimeout(() => setError(null), 3000);
+            }
+        } catch (error) {
+            console.error("Error searching for expenses:", error);
+            setError("An error occurred while searching.");
+            setTimeout(() => setError(null), 3000);
+        }
+    };
+
     return (
         <div className="container mt-4">
+            <SearchBar onSearch={handleSearch} />
             <CustomAlert
                 show={success}
                 setShow={setSuccess}
                 variant="success"
             />
             <CustomAlert show={error} setShow={setError} variant="danger" />
-            <div className="row">
+            <div className="row mt-3">
                 {expenses.map((expense) => (
                     <Expense
                         key={expense.expense_id}

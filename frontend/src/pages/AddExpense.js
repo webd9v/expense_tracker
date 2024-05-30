@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 import CustomAlert from "../components/CustomAlert";
+import CategoryDropdown from "../components/CategoryDropdown";
 
 function AddExpense() {
     const [expenseData, setExpenseData] = useState({
@@ -9,7 +10,8 @@ function AddExpense() {
         expense_description: "",
         date_occured: "",
         is_paid: false,
-        due_date: "", // Optional
+        due_date: "",
+        category: "",
     });
 
     const [error, setError] = useState(null);
@@ -56,6 +58,7 @@ function AddExpense() {
             date_occured: "",
             is_paid: false,
             due_date: "",
+            category: "",
         });
         setError(null); // Clear any previous errors
     };
@@ -121,6 +124,10 @@ function AddExpense() {
                                 onChange={handleChange}
                             />
                         </Form.Group>
+                        <CategoryDropdown
+                            onCategorySelect={setSelectedCategory}
+                            selectedCategory={selectedCategory}
+                        />
                         <div className="d-flex justify-content-between mt-3">
                             <Button variant="secondary" onClick={handleClear}>
                                 Clear All

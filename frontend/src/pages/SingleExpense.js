@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Card } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import CustomAlert from "../components/CustomAlert";
 
 function SingleExpense() {
@@ -50,6 +50,9 @@ function SingleExpense() {
             {expense && (
                 <Card>
                     <Card.Body>
+                        <Button variant="primary" className="float-end">
+                            Category: {expense.category || "Not Specified!"}
+                        </Button>
                         <Card.Title>{expense.expense_title}</Card.Title>
                         <Card.Text>
                             Description:{" "}

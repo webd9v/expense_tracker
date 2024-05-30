@@ -1,8 +1,21 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
     pass
+
+
+class Category(models.Model):
+    category_name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+    
+    def __str__(self):
+        return self.category_name
+
 
 class Expense(models.Model):
     expense_id = models.AutoField(primary_key=True, verbose_name="Expense ID")
@@ -13,6 +26,7 @@ class Expense(models.Model):
     date_occured = models.DateField(verbose_name="Date Occurred")
     is_paid = models.BooleanField(default=False, verbose_name="Is Paid")
     due_date = models.DateField(blank=True, null=True, verbose_name="Due Date")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="category_expenses") 
 
     class Meta:
         verbose_name = "Expense"
