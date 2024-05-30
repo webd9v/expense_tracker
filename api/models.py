@@ -26,7 +26,7 @@ class Expense(models.Model):
     date_occured = models.DateField(verbose_name="Date Occurred")
     is_paid = models.BooleanField(default=False, verbose_name="Is Paid")
     due_date = models.DateField(blank=True, null=True, verbose_name="Due Date")
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="category_expenses") 
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="category_expenses", default=None)
 
     class Meta:
         verbose_name = "Expense"

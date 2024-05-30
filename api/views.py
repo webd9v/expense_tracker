@@ -110,25 +110,34 @@ def add_expense(request):
             is_paid = data.get('is_paid', False)
             due_date = data.get('due_date')
             category = data.get('category')
-            try:
-                category = Category.objects.get(category_name=category)
-            except:
-                return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
+            if category and len(category) > 0:
+                try:
+                    category = Category.objects.get(category_name=category)
+                except:
+                    return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
 
             if not expense_title or not date_occured:
                 return JsonResponse({'error': 'Expense title and date occurred are required.'}, status=400)
-
-            expense = Expense(
-                expense_title=expense_title,
-                expense_description=expense_description,
-                date_occured=date_occured,
-                is_paid=is_paid,
-                due_date=due_date,
-                user=request.user,
-                category=category
-            )
+            if category and len(category) > 0:
+                expense = Expense(
+                    expense_title=expense_title,
+                    expense_description=expense_description,
+                    date_occured=date_occured,
+                    is_paid=is_paid,
+                    due_date=due_date,
+                    user=request.user,
+                    category=category
+                )
+            else:
+                expense = Expense(
+                    expense_title=expense_title,
+                    expense_description=expense_description,
+                    date_occured=date_occured,
+                    is_paid=is_paid,
+                    due_date=due_date,
+                    user=request.user,
+                )
             expense.save()
-
             return JsonResponse({
                 'expense_id': expense.expense_id,
                 'expense_title': expense.expense_title,
@@ -137,7 +146,7 @@ def add_expense(request):
                 'is_paid': expense.is_paid,
                 'due_date': expense.due_date,
                 'user': expense.user.username,
-                'category': expense.category.category_name
+                'category': expense.category.category_name if category else ""
             }, status=201)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON.'}, status=400)

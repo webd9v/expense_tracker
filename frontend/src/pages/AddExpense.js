@@ -28,7 +28,6 @@ function AddExpense() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await fetch("/api/expenses/add/", {
                 // Ensure your endpoint is correct
@@ -43,7 +42,7 @@ function AddExpense() {
                 navigate("/"); // Redirect to dashboard
             } else {
                 const errorData = await response.json();
-                setError(errorData);
+                setError(errorData.error);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -65,8 +64,11 @@ function AddExpense() {
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
-            <Card style={{ width: "24rem", height: "30rem" }}>
-                <Card.Header className="text-center">
+            <Card
+                className="bg-light text-white"
+                style={{ width: "24rem", height: "28rem" }}
+            >
+                <Card.Header className="text-center bg-dark">
                     <h3>Add Expense</h3>
                 </Card.Header>
                 <Card.Body>
@@ -79,10 +81,12 @@ function AddExpense() {
                         <Form.Group className="mt-3" controlId="formBasicTitle">
                             <Form.Control
                                 type="text"
+                                className="border border-secondary"
                                 placeholder="Expense Title"
                                 name="expense_title"
                                 value={expenseData.expense_title}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
 
@@ -92,6 +96,7 @@ function AddExpense() {
                         >
                             <Form.Control
                                 type="text"
+                                className="border border-secondary"
                                 placeholder="Description"
                                 name="expense_description"
                                 value={expenseData.expense_description}
@@ -102,17 +107,9 @@ function AddExpense() {
                         <Form.Group className="mt-3" controlId="formBasicODate">
                             <Form.Control
                                 type="date"
+                                className="border border-secondary"
                                 name="date_occured"
                                 value={expenseData.date_occured}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mt-3" controlId="isPaidCheckbox">
-                            <Form.Check
-                                type="checkbox"
-                                label="Is Paid?"
-                                name="is_paid"
-                                checked={expenseData.is_paid}
                                 onChange={handleChange}
                             />
                         </Form.Group>
@@ -120,16 +117,36 @@ function AddExpense() {
                             <Form.Control
                                 type="date"
                                 name="due_date"
+                                className="border border-secondary"
                                 value={expenseData.due_date}
                                 onChange={handleChange}
                             />
                         </Form.Group>
-                        <CategoryDropdown
-                            onCategorySelect={setSelectedCategory}
-                            selectedCategory={selectedCategory}
-                        />
+                        <Form.Group className="mt-3" controlId="fromCategory">
+                            <CategoryDropdown
+                                className="border border-secondary"
+                                onCategorySelect={handleChange}
+                                selectedCategory={expenseData.category}
+                            />
+                        </Form.Group>
                         <div className="d-flex justify-content-between mt-3">
-                            <Button variant="secondary" onClick={handleClear}>
+                            <Form.Group controlId="isPaidCheckbox">
+                                <input
+                                    id="checkbox_paid"
+                                    type="checkbox"
+                                    name="is_paid"
+                                    className="btn-check"
+                                    checked={expenseData.is_paid}
+                                    onChange={handleChange}
+                                />
+                                <label
+                                    className="btn btn-outline-primary"
+                                    for="checkbox_paid"
+                                >
+                                    Is Paid?
+                                </label>
+                            </Form.Group>
+                            <Button variant="danger" onClick={handleClear}>
                                 Clear All
                             </Button>
                             <Button variant="success" type="submit">

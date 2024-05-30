@@ -34,6 +34,7 @@ function CategoryDropdown({ onCategorySelect, selectedCategory }) {
         <Form.Group controlId="categorySelect">
             <Form.Control
                 as="select"
+                className="border border-secondary"
                 value={selectedCategory || ""}
                 onChange={(e) => onCategorySelect(e.target.value)}
             >

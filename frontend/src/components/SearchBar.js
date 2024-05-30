@@ -23,6 +23,7 @@ function SearchBar({ onSearch }) {
                     <Form.Control
                         type="text"
                         placeholder="Search by title or description"
+                        className="border border-secondary"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -31,6 +32,7 @@ function SearchBar({ onSearch }) {
                     <Form.Control
                         type="number"
                         placeholder="Month"
+                        className="border border-secondary"
                         min="1"
                         max="12"
                         value={filters.month}
@@ -43,6 +45,7 @@ function SearchBar({ onSearch }) {
                     <Form.Control
                         type="number"
                         placeholder="Day"
+                        className="border border-secondary"
                         min="1"
                         max="31"
                         value={filters.day}
@@ -54,6 +57,7 @@ function SearchBar({ onSearch }) {
                 <Col md={1}>
                     <Form.Control
                         type="number"
+                        className="border border-secondary"
                         placeholder="Year"
                         value={filters.year}
                         onChange={(e) =>
