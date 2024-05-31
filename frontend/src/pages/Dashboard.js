@@ -92,6 +92,7 @@ function Dashboard() {
     return (
         <div className="container mt-4">
             <SearchBar onSearch={handleSearch} />
+            <hr />
             <CustomAlert
                 show={success}
                 setShow={setSuccess}

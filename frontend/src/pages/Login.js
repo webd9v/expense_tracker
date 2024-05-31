@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 import CustomAlert from "../components/CustomAlert";
+import { CsrfContext } from "../context/csrf";
 
 function Login({ onLogin }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [error, setError] = useState(null);
-    // const [csrfToken, setCsrfToken] = useState("");
+    const csrfToken = useContext(CsrfContext);
 
     const navigate = useNavigate();
-
-    // useEffect(() => {
-    //     // Fetch the CSRF token from the server
-    //     const fetchCsrfToken = async () => {
-    //         const response = await fetch("/api/csrf_token/", {
-    //             method: "GET",
-    //             credentials: "include",
-    //         });
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             setCsrfToken(data.headers.get("X-CSRFToken"));
-    //             console.log(csrfToken);
-    //         }
-    //     };
-
-    //     fetchCsrfToken();
-    // }, []);
 
     useEffect(() => {
         // Check authentication status on initial load (e.g., fetch from local storage or API)
@@ -41,12 +25,16 @@ function Login({ onLogin }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!csrfToken) {
+            setError("CSRF token not available. Please try again.");
+            return;
+        }
         try {
             const response = await fetch("api/login/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // "X-CSRFToken": csrfToken,
+                    "X-CSRFToken": csrfToken,
                 },
                 body: JSON.stringify({ email, password }),
             });

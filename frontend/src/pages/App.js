@@ -11,6 +11,7 @@ import Login from "./Login";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
 import SingleExpense from "./SingleExpense";
+import { CsrfProvider } from "../context/csrf";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,46 +33,51 @@ function App() {
     };
 
     return (
-        <Router>
-            <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-            <Routes>
-                <Route
-                    path="/add-expense"
-                    element={
-                        isAuthenticated ? (
-                            <AddExpense />
-                        ) : (
-                            <Navigate to="/login" />
-                        )
-                    }
+        <CsrfProvider>
+            <Router>
+                <Navbar
+                    isAuthenticated={isAuthenticated}
+                    onLogout={handleLogout}
                 />
-                <Route
-                    path="/login"
-                    element={<Login onLogin={handleLogin} />}
-                />
-                <Route path="/register" element={<Register />} />
-                <Route
-                    path="/"
-                    element={
-                        isAuthenticated ? (
-                            <Dashboard />
-                        ) : (
-                            <Navigate to="/login" />
-                        )
-                    }
-                />
-                <Route
-                    path="/expense/:id"
-                    element={
-                        isAuthenticated ? (
-                            <SingleExpense />
-                        ) : (
-                            <Navigate to="/login" />
-                        )
-                    }
-                />
-            </Routes>
-        </Router>
+                <Routes>
+                    <Route
+                        path="/add-expense"
+                        element={
+                            isAuthenticated ? (
+                                <AddExpense />
+                            ) : (
+                                <Navigate to="/login" />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={<Login onLogin={handleLogin} />}
+                    />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                        path="/"
+                        element={
+                            isAuthenticated ? (
+                                <Dashboard />
+                            ) : (
+                                <Navigate to="/login" />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/expense/:id"
+                        element={
+                            isAuthenticated ? (
+                                <SingleExpense />
+                            ) : (
+                                <Navigate to="/login" />
+                            )
+                        }
+                    />
+                </Routes>
+            </Router>
+        </CsrfProvider>
     );
 }
 

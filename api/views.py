@@ -3,8 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import JsonResponse
-from django.shortcuts import HttpResponseRedirect, render
-from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from django.db.models import Q
@@ -15,13 +13,11 @@ from rest_framework.authtoken.models import Token
 from .models import Expense, User, Category
 from .serializers import ExpenseSerializer, CategorySerializer
 
-@api_view(['GET'])
 def get_csrf_token(request):
     csrf_token = get_token(request)
-    return Response({'csrfToken': csrf_token})
+    return JsonResponse({'csrfToken': csrf_token})
 
 # Authentication Endpoints
-@csrf_exempt
 def login_view(request):
     if request.method == "POST":
         try:
