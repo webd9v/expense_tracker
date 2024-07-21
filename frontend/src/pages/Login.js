@@ -9,7 +9,7 @@ function Login({ onLogin }) {
     const [password, setPassword] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [error, setError] = useState(null);
-    const csrfToken = useContext(CsrfContext);
+    const { csrfToken, setCsrfToken } = useContext(CsrfContext);
 
     const navigate = useNavigate();
 
@@ -21,6 +21,15 @@ function Login({ onLogin }) {
             navigate("/");
         }
     }, [isAuthenticated]);
+
+    const getCSRFCookie = () => {
+        const cookieValue = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="))
+            ?.split("=")[1];
+
+        return cookieValue || "";
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,6 +52,8 @@ function Login({ onLogin }) {
                 const data = await response.json();
                 onLogin(data.token);
                 navigate("/"); // Redirect to the dashboard
+                const newToken = getCSRFCookie();
+                setCsrfToken(newToken);
             } else {
                 // Handle login error
                 const errorData = await response.json();

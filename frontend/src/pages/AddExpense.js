@@ -19,6 +19,7 @@ function AddExpense() {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
+        console.log(e);
         const { name, value, type, checked } = e.target;
         setExpenseData((prevData) => ({
             ...prevData,
@@ -66,7 +67,7 @@ function AddExpense() {
         <div className="d-flex justify-content-center align-items-center vh-100">
             <Card
                 className="bg-light text-white"
-                style={{ width: "24rem", height: "28rem" }}
+                style={{ width: "24rem", height: "30rem" }}
             >
                 <Card.Header className="text-center bg-dark">
                     <h3>Add Expense</h3>
@@ -122,13 +123,13 @@ function AddExpense() {
                                 onChange={handleChange}
                             />
                         </Form.Group>
-                        <Form.Group className="mt-3" controlId="fromCategory">
+                        <div className="mt-3" controlId="fromCategory">
                             <CategoryDropdown
                                 className="border border-secondary"
                                 onCategorySelect={handleChange}
                                 selectedCategory={expenseData.category}
                             />
-                        </Form.Group>
+                        </div>
                         <div className="d-flex justify-content-between mt-3">
                             <Form.Group controlId="isPaidCheckbox">
                                 <input

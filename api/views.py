@@ -1,4 +1,5 @@
 import json
+from django.utils.dateparse import parse_date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -114,7 +115,7 @@ def add_expense(request):
 
             if not expense_title or not date_occured:
                 return JsonResponse({'error': 'Expense title and date occurred are required.'}, status=400)
-            if category and len(category) > 0:
+            if category:
                 expense = Expense(
                     expense_title=expense_title,
                     expense_description=expense_description,
@@ -165,31 +166,29 @@ def delete_expense(request, expense_id):
 @api_view(['GET'])
 def search_expenses(request):
     searchTerm = request.GET.get("search", "")
-    month = request.GET.get("month")
-    day = request.GET.get("day")
-    year = request.GET.get("year")
-    is_paid = request.GET.get("is_paid")
-    category = request.GET.get("category")
+    date = request.GET.get("date", "")
+    is_paid = request.GET.get("is_paid", "")
+    category = request.GET.get("category", "")
 
     expenses = Expense.objects.filter(user=request.user)
 
     if searchTerm:
         expenses = expenses.filter(Q(expense_title__icontains=searchTerm) | Q(expense_description__icontains=searchTerm))
-    if month:
-        expenses = expenses.filter(date_occured__month=month)
-    if day:
-        expenses = expenses.filter(date_occured__day=day)
-    if year:
-        expenses = expenses.filter(date_occured__year=year)
+    if date:
+        parsed_date = parse_date(date)
+        if parsed_date:
+            expenses = expenses.filter(date_occured=parsed_date)
+        else:
+            return JsonResponse({'error': 'Invalid date format. Please use YYYY-MM-DD.'}, status=400)
     if is_paid and is_paid.lower() != "null":
         is_paid_bool = is_paid.lower() == "true"
         expenses = expenses.filter(is_paid=is_paid_bool)
-    if category:
+    if category and category.lower() != "undefined":
         try:
-            category = Category.objects.get(category_name=category)
-        except:
+            category_obj = Category.objects.get(category_name=category)
+            expenses = expenses.filter(category=category_obj)
+        except Category.DoesNotExist:
             return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
-        expenses = expenses.filter(category=category)
 
     serializer = ExpenseSerializer(expenses, many=True)
     return Response(serializer.data)

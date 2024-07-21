@@ -3,106 +3,83 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import CategoryDropdown from "../components/CategoryDropdown";
 
 function SearchBar({ onSearch }) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
     const [filters, setFilters] = useState({
-        month: "",
-        day: "",
-        year: "",
+        searchTerm: "",
+        selectedCategory: "",
+        date: "",
         isPaid: null, // null for all, true/false for specific
     });
 
     const handleSearch = () => {
-        onSearch(searchTerm, { ...filters, category: selectedCategory });
+        onSearch({ ...filters });
     };
 
     return (
         <Form className="container mt-4 p-2 rounded">
-            <Row>
-                <Col md={4}>
-                    <Form.Control
-                        type="text"
-                        placeholder="Search by title or description"
-                        className="border border-secondary"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </Col>
-                <Col md={2}>
-                    <Form.Control
-                        type="number"
-                        placeholder="Month"
-                        className="border border-secondary"
-                        min="1"
-                        max="12"
-                        value={filters.month}
-                        onChange={(e) =>
-                            setFilters({ ...filters, month: e.target.value })
-                        }
-                    />
-                </Col>
-                <Col md={1}>
-                    <Form.Control
-                        type="number"
-                        placeholder="Day"
-                        className="border border-secondary"
-                        min="1"
-                        max="31"
-                        value={filters.day}
-                        onChange={(e) =>
-                            setFilters({ ...filters, day: e.target.value })
-                        }
-                    />
-                </Col>
-                <Col md={1}>
-                    <Form.Control
-                        type="number"
-                        className="border border-secondary"
-                        placeholder="Year"
-                        value={filters.year}
-                        onChange={(e) =>
-                            setFilters({ ...filters, year: e.target.value })
-                        }
-                    />
-                </Col>
-                <Col md={2}>
-                    <CategoryDropdown
-                        onCategorySelect={setSelectedCategory}
-                        selectedCategory={selectedCategory}
-                    />
-                </Col>
-                <Col
-                    md={1}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignContent: "center",
-                    }}
-                    className="bg-secondary rounded text-white pt-1"
+            <div className="d-flex flex-column">
+                <Row>
+                    <Col md={6}>
+                        <Form.Control
+                            type="text"
+                            placeholder="Search by title or description"
+                            className="border border-secondary mb-1"
+                            value={filters.searchTerm}
+                            onChange={(e) =>
+                                setFilters({
+                                    ...filters,
+                                    searchTerm: e.target.value,
+                                })
+                            }
+                        />
+                    </Col>
+                    <Col md={2}>
+                        <CategoryDropdown
+                            onCategorySelect={(e) =>
+                                setFilters({
+                                    ...filters,
+                                    selectedCategory: e.target.value,
+                                })
+                            }
+                            selectedCategory={filters.selectedCategory}
+                        />
+                    </Col>
+                    <Col md={2}>
+                        <Form.Control
+                            type="date"
+                            className="border border-secondary mb-1"
+                            value={filters.date}
+                            onChange={(e) =>
+                                setFilters({ ...filters, date: e.target.value })
+                            }
+                        />
+                    </Col>
+                    <Col md={2}>
+                        <div
+                            className={`btn ${
+                                filters.isPaid ? "bg-success" : "bg-secondary"
+                            } text-white px-3 d-block`}
+                            style={{ borderRadius: "4px" }}
+                            onClick={() =>
+                                setFilters({
+                                    ...filters,
+                                    isPaid: !filters.isPaid,
+                                })
+                            }
+                        >
+                            {filters.isPaid ? "Paid" : "Not Paid"}
+                        </div>
+                    </Col>
+                </Row>
+
+                <Button
+                    variant="primary"
+                    onClick={handleSearch}
+                    className="mt-1"
                 >
-                    <input
-                        type="checkbox"
-                        style={{
-                            width: "16px",
-                            height: "16px",
-                            margin: "5% 5%",
-                        }}
-                        checked={filters.isPaid === true}
-                        onChange={(e) =>
-                            setFilters({ ...filters, isPaid: e.target.checked })
-                        }
-                    />
-                    <label>Paid?</label>
-                </Col>
-                <Col md={1}>
-                    <Button variant="primary" onClick={handleSearch}>
-                        Search
-                    </Button>
-                </Col>
-            </Row>
+                    Search
+                </Button>
+            </div>
         </Form>
     );
 }
-
 export default SearchBar;

@@ -35,8 +35,9 @@ function CategoryDropdown({ onCategorySelect, selectedCategory }) {
             <Form.Control
                 as="select"
                 className="border border-secondary"
+                name="category"
                 value={selectedCategory || ""}
-                onChange={(e) => onCategorySelect(e.target.value)}
+                onChange={(e) => onCategorySelect(e)}
             >
                 <option value="">All Categories</option>
                 {categories.map((category) => (

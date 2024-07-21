@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
 
-const CsrfContext = createContext(null);
+const CsrfContext = createContext({
+    csrfToken: null,
+    setCsrfToken: () => {},
+});
 
 function CsrfProvider({ children }) {
     const [csrfToken, setCsrfToken] = useState(null);
@@ -24,7 +27,7 @@ function CsrfProvider({ children }) {
     }, []);
 
     return (
-        <CsrfContext.Provider value={csrfToken}>
+        <CsrfContext.Provider value={{ csrfToken, setCsrfToken }}>
             {children}
         </CsrfContext.Provider>
     );

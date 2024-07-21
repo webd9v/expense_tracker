@@ -8,7 +8,14 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategoryNameField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.category_name
+
+
 class ExpenseSerializer(serializers.ModelSerializer):
+    category = CategoryNameField(queryset=Category.objects.all())
+
     class Meta:
         model = Expense
         fields = "__all__"

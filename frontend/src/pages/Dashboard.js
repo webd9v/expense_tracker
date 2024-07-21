@@ -58,15 +58,13 @@ function Dashboard() {
         navigate(`/expense/${expenseId}`);
     };
 
-    const handleSearch = async (searchTerm, filters) => {
+    const handleSearch = async (filters) => {
         try {
             const params = new URLSearchParams({
-                search: searchTerm,
-                month: filters.month,
-                day: filters.day,
-                year: filters.year,
+                search: filters.searchTerm,
+                date: filters.date,
                 is_paid: filters.isPaid,
-                category: filters.category,
+                category: filters.selectedCategory,
             });
 
             const response = await fetch(`/api/expenses/search/?${params}`, {
