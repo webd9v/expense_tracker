@@ -1,4 +1,5 @@
 import json
+from django.core.exceptions import ValidationError
 from django.utils.dateparse import parse_date
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -98,59 +99,69 @@ def get_all_expenses(request):
 @login_required
 @csrf_exempt
 def add_expense(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            expense_title = data.get('expense_title')
-            expense_description = data.get('expense_description')
-            date_occured = data.get('date_occured')
-            is_paid = data.get('is_paid', False)
-            due_date = data.get('due_date')
-            category = data.get('category')
-            if category and len(category) > 0:
-                try:
-                    category = Category.objects.get(category_name=category)
-                except:
-                    return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
-
-            if not expense_title or not date_occured:
-                return JsonResponse({'error': 'Expense title and date occurred are required.'}, status=400)
-            if category:
-                expense = Expense(
-                    expense_title=expense_title,
-                    expense_description=expense_description,
-                    date_occured=date_occured,
-                    is_paid=is_paid,
-                    due_date=due_date,
-                    user=request.user,
-                    category=category
-                )
-            else:
-                expense = Expense(
-                    expense_title=expense_title,
-                    expense_description=expense_description,
-                    date_occured=date_occured,
-                    is_paid=is_paid,
-                    due_date=due_date,
-                    user=request.user,
-                )
-            expense.save()
-            return JsonResponse({
-                'expense_id': expense.expense_id,
-                'expense_title': expense.expense_title,
-                'expense_description': expense.expense_description,
-                'date_occured': expense.date_occured,
-                'is_paid': expense.is_paid,
-                'due_date': expense.due_date,
-                'user': expense.user.username,
-                'category': expense.category.category_name if category else ""
-            }, status=201)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
+    if request.method != 'POST':
         return JsonResponse({'error': 'Invalid HTTP method.'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        expense_title = data.get('expense_title')
+        expense_description = data.get('expense_description', '')
+        date_occured = data.get('date_occured')
+        is_paid = data.get('is_paid', False)
+        due_date = data.get('due_date')
+        category_name = data.get('category')
+
+        # Validate required fields
+        if not expense_title or not date_occured:
+            return JsonResponse({'error': 'Expense title and date occurred are required.'}, status=400)
+
+        # Validate and retrieve the category
+        if category_name:
+            try:
+                category = Category.objects.get(category_name=category_name)
+            except Category.DoesNotExist:
+                return JsonResponse({'error': 'Entered Category does not exist!'}, status=400)
+        else:
+            category = None
+
+        # Validate due date
+        if due_date and due_date < date_occured:
+            return JsonResponse({'error': 'Due date cannot be earlier than the date occurred.'}, status=400)
+
+        # Create the expense object
+        expense = Expense(
+            expense_title=expense_title,
+            expense_description=expense_description,
+            date_occured=date_occured,
+            is_paid=is_paid,
+            due_date=due_date,
+            user=request.user,
+            category=category
+        )
+
+        # Save the expense object to the database
+        expense.full_clean()  # Call full_clean for model validation
+        expense.save()
+
+        # Return a JSON response with the new expense details
+        response_data = {
+            'expense_id': expense.expense_id,
+            'expense_title': expense.expense_title,
+            'expense_description': expense.expense_description,
+            'date_occured': expense.date_occured,
+            'is_paid': expense.is_paid,
+            'due_date': expense.due_date,
+            'user': expense.user.username,
+            'category': expense.category.category_name if category else ""
+        }
+        return JsonResponse(response_data, status=201)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+    except ValidationError as e:
+        return JsonResponse({'error': e.messages}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': 'An unexpected error occurred.'}, status=500)
 
 @login_required
 @csrf_exempt

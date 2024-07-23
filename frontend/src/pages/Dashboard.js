@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Expense from "../components/Expense";
 import CustomAlert from "../components/CustomAlert";
 import SearchBar from "../components/SearchBar";
+import { Card, Button } from "react-bootstrap";
 
 function Dashboard() {
     const [expenses, setExpenses] = useState([]);
@@ -106,6 +107,37 @@ function Dashboard() {
                         handleLearnMoreClick={handleLearnMoreClick}
                     />
                 ))}
+                <div className="col-md-4 mb-3">
+                    <Card
+                        className="bg-light p-2 d-flex justify-content-center align-items-center"
+                        style={{ height: "100%" }}
+                    >
+                        <Button
+                            className="m-2"
+                            variant="secondary"
+                            style={{
+                                borderRadius: "50%",
+                                width: "60px",
+                                height: "60px",
+                            }}
+                            onClick={() => navigate("/add-expense")}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="32"
+                                height="32"
+                                fill="currentColor"
+                                class="bi bi-plus-lg"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+                                />
+                            </svg>
+                        </Button>
+                    </Card>
+                </div>
             </div>
         </div>
     );

@@ -67,7 +67,7 @@ function AddExpense() {
         <div className="d-flex justify-content-center align-items-center vh-100">
             <Card
                 className="bg-light text-white"
-                style={{ width: "24rem", height: "30rem" }}
+                style={{ width: "24rem", height: "50%", maxHeight: "60%" }}
             >
                 <Card.Header className="text-center bg-dark">
                     <h3>Add Expense</h3>
